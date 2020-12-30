@@ -14,3 +14,30 @@ a {
 * {
   box-sizing: border-box;
 }
+
+.text-ceter{
+  text-align: center;
+}
+
+.sectionPT{
+  padding-top: 120px;
+}
+
+.sectionPB{
+  padding-bottom: 120px;
+}
+
+.temp{
+  font-weight: 300;
+}
+
+.col_center{
+  margin: 0 auto;
+  display: block
+}
+
+.loading{
+  display: flex;
+  flex-grow: 1;
+  justify-content: center;
+}

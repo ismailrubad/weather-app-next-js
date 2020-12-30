@@ -1,65 +1,63 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+// import Head from 'next/head'
+// import styles from '../styles/Home.module.css'
+import Link from 'next/link'
+import React, { useState, useEffect } from 'react';
+import dayName from '../utils/day-name'
 
 export default function Home() {
+
+  const [forecastList, setForecastList] = useState([])
+  const [cityname, setCityname] = useState("Dhaka")
+
+  useEffect(async () => {
+    const response = await fetch(`https://api.openweathermap.org/data/2.5/forecast/daily?q=${cityname}&units=metric&APPID=3e00ee3cdf8e40b757ebe9e6a03f8f9d`)
+    const forecastList = await response.json();
+    setForecastList(forecastList.list)
+    console.log(forecastList)
+  }, [cityname])
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
+    <div className="sectionPT sectionPB">
+      <div className="container">
+        <div class="form-group row">
+          <label for="staticEmail" class="col-md-3 col-form-label">Choose A Location</label>
+          <div class="col-sm-5">
+            <select className="form-control mb-5" onChange={e => setCityname(e.target.value)}>
+              <option value="Dhaka">Dhaka</option>
+              <option value="Chittagong">Chittagong</option>
+              <option value="Sylhet">Sylhet</option>
+              <option value="Rajshahi">Rajshahi</option>
+              <option value="Barishal">Barishal</option>
+              <option value="Rangpur">Rangpur</option>
+            </select>
+          </div>
         </div>
-      </main>
+        <div className="row">
+          {
+            (forecastList.length > 0) ?
+              forecastList.map(item => {
+                return (
+                  <div className="col-md-6 col-lg-4" key={item.dt}>
+                    <div className="single_forecast card shadow-sm mb-4 p-3" >
+                      <div className="card-body">
+                        <div className="top">
+                          <h5>{dayName(item.dt)} <span className="temp">{item.temp.min} &#8451; - {item.temp.max} &#8451;</span> </h5>
+                          <p>{item.weather[0].main}</p>
+                        </div>
 
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
+                        <Link className="btn" href={{
+                          pathname: `forecastdetails/${item.dt}`,
+                          query: { data: JSON.stringify(item), cityname },
+                        }}>
+                          <a className="btn btn-primary btn-sm">More</a>
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                )
+              }) : <p className="loading">Loading...</p>
+          }
+        </div>
+      </div>
     </div>
   )
 }
